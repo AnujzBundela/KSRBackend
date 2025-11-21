@@ -6,31 +6,34 @@ const contactRoutes = require("./routes/contactRoutes");
 
 const app = express();
 
-// Database
+// Connect DB
 connectDB();
 
 // Body parsers
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// 🌐 Correct CORS settings
+// ✅ FIXED CORS CONFIG
 app.use(cors({
-  origin: ["https://ksrinternational.in", "http://localhost:5500", "http://localhost:3000"],
+  origin: ["https://ksrinternational.in", "http://localhost:3000", "http://localhost:5500"],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true
 }));
 
-// Allow preflight
-app.options("*", cors()); // IMPORTANT
+// ✅ CRITICAL — HANDLE PREFLIGHT REQUESTS
+app.options("*", (req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", "https://ksrinternational.in");
+  res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.sendStatus(200);
+});
 
 // Routes
 app.use("/api", contactRoutes);
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 
 // require("dotenv").config();
